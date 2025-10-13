@@ -105,8 +105,7 @@ Los scripts están en `src/main/resources/db/migration`.
 
 ## 📜 Licencia
 
-Proyecto de investigación aplicada desarrollado en el **SENA - SENNOVA**, bajo fines académicos y tecnológicos.
-© 2025 - Pettersson Pulido.
+© 2025 - Pettersson.
 
 ---
 
