@@ -1,5 +1,6 @@
 package com.iagro.pettersson.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.iagro.pettersson.Enum.EmisorMensaje;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,6 +22,7 @@ public class Mensaje {
 
     @ManyToOne
     @JoinColumn(name = "id_chat")
+    @JsonBackReference
     private Chat chat;
 
     private String contenido;

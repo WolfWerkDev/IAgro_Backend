@@ -1,5 +1,6 @@
 package com.iagro.pettersson.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.iagro.pettersson.Enum.TipoPlan;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,9 +23,9 @@ public class Plan {
     private TipoPlan tipoPlan;
     private String descripcion;
     private float precioMensual;
-    private int maxFincas;
-    private int maxAgrolinksPorFinca;
-    private int maxMensajesChat;
+    private Integer maxFincas;
+    private Integer maxAgrolinksPorFinca;
+    private Integer maxMensajesChat;
     private String variablesDisponibles;
     @Builder.Default
     private LocalDateTime fechaCreacion = LocalDateTime.now();
@@ -32,5 +33,6 @@ public class Plan {
     private boolean esActivo = true;
 
     @OneToMany(mappedBy = "plan")
+    @JsonManagedReference
     private List<Usuario> usuarios;
 }

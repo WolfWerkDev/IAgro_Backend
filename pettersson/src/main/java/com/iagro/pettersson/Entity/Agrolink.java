@@ -1,5 +1,7 @@
 package com.iagro.pettersson.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,10 +29,12 @@ public class Agrolink {
     private LocalDateTime fechaVinculacion;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "id_finca")
     private Finca finca;
 
     @OneToMany(mappedBy = "codigoAgrolink")
+    @JsonManagedReference
     private List<Reporte> reportes;
 
 }

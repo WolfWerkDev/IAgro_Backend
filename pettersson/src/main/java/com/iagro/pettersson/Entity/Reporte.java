@@ -1,9 +1,9 @@
 package com.iagro.pettersson.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -21,11 +21,13 @@ public class Reporte {
 
     @ManyToOne
     @JoinColumn(name = "codigo_agrolink")
+    @JsonBackReference
     private Agrolink codigoAgrolink;
 
     private float temperaturaAmbiente;
     private float temperaturaSuelo;
     private float humedadSuelo;
+    @Column(name = "ph_suelo")
     private float pHSuelo;
     private float conductividadSuelo;
 

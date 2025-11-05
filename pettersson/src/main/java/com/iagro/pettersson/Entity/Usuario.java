@@ -1,5 +1,7 @@
 package com.iagro.pettersson.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +32,7 @@ public class Usuario {
     private String contraseña;
 
     @Builder.Default
-    private String fotoPerfil = "fotoPerfilDefault.png"; // Una foto por defecto
+    private String fotoPerfil = "images/fotoPerfilDefault.png"; // Una foto por defecto
     private LocalDateTime fechaInicioPlan;
     private LocalDateTime fechaFinPlan;
 
@@ -42,12 +44,15 @@ public class Usuario {
     // FK N:1 con Plan (Tabla Plan)
     @ManyToOne
     @JoinColumn(name = "id_plan")
+    @JsonBackReference
     @Builder.Default
     private Plan plan = Plan.builder().idPlan(1L).build();
 
     @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
     private List<Finca> fincas;
 
     @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
     private List<Chat> chats;
 }
