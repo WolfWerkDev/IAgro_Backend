@@ -1,8 +1,11 @@
 package com.iagro.pettersson.Service;
 
+import com.iagro.pettersson.DTO.Finca.InfoFinca;
+import com.iagro.pettersson.DTO.Plan.InfoPlan;
 import com.iagro.pettersson.DTO.Usuario.ActualizarUsuario;
 import com.iagro.pettersson.DTO.Usuario.InformacionUsuario;
 import com.iagro.pettersson.DTO.Usuario.RegistroUsuario;
+import com.iagro.pettersson.Entity.Finca;
 import com.iagro.pettersson.Entity.Plan;
 import com.iagro.pettersson.Entity.Usuario;
 import com.iagro.pettersson.Repository.UsuarioRepository;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -90,8 +95,18 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public InformacionUsuario obtenerInfoDeUsuario(Long id) {
         Usuario usuario = buscarUsuarioPorId(id);
+        Plan userPlan = usuario.getPlan();
+        InfoPlan info = new InfoPlan(
+                userPlan.getIdPlan(),
+                userPlan.getTipoPlan(),
+                userPlan.getDescripcion(),
+                userPlan.getMaxFincas(),
+                userPlan.getMaxAgrolinksPorFinca(),
+                userPlan.getMaxMensajesChat(),
+                userPlan.getVariablesDisponibles()
+        );
 
-        return new InformacionUsuario(usuario.getFotoPerfil(), usuario.getNombre(), usuario.getFechaNacimiento(), usuario.getTelefono(), usuario.getCorreo(), usuario.getPlan(), usuario.getFechaInicioPlan(), usuario.getFechaFinPlan());
+        return new InformacionUsuario(usuario.getFotoPerfil(), usuario.getNombre(), usuario.getFechaNacimiento(), usuario.getTelefono(), usuario.getCorreo(), info, usuario.getFechaInicioPlan(), usuario.getFechaFinPlan());
     }
 
     @Transactional

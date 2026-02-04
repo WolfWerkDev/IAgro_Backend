@@ -1,10 +1,9 @@
 package com.iagro.pettersson.Controller;
 
-import com.iagro.pettersson.DTO.Finca.ActualizarFinca;
-import com.iagro.pettersson.DTO.Finca.FincasPorUsuario;
-import com.iagro.pettersson.DTO.Finca.RegistroFinca;
+import com.iagro.pettersson.DTO.Finca.*;
 import com.iagro.pettersson.Entity.Finca;
 import com.iagro.pettersson.Entity.Usuario;
+import com.iagro.pettersson.Enum.TipoDeCultivo;
 import com.iagro.pettersson.Service.FincaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +15,19 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("fincas")
+@RequestMapping("/fincas")
 public class FincaController {
 
     @Autowired
     private FincaService fincaService;
 
     @GetMapping("/fincas-usuario")
-    public ResponseEntity<FincasPorUsuario> obtenerFincasDelUsuario() {
+    public ResponseEntity<?> obtenerFincasDelUsuario() {
         Long idUser = fincaService.obtenerIdUsuario();
         Usuario usuario = fincaService.buscarUsuarioPorId(idUser);
 
-        List<Finca> listaFincas = fincaService.fincasDelUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.OK).body(new FincasPorUsuario(listaFincas));
+        List<InfoFinca> listaFincas = fincaService.obtenerInfoFincas(usuario);
+        return ResponseEntity.status(HttpStatus.OK).body(listaFincas);
     }
 
     @PostMapping("/registrar-finca")
@@ -38,7 +37,8 @@ public class FincaController {
 
         try {
             fincaService.registrarFinca(idUser, dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Finca creada con éxito");
+            FincaCreada dtoResponse = new FincaCreada("Finca creada con éxito");
+            return ResponseEntity.status(HttpStatus.CREATED).body(dtoResponse);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (RuntimeException e) {
@@ -48,15 +48,16 @@ public class FincaController {
     }
 
     @PutMapping("/actualizar-finca")
-    public ResponseEntity<?> actualizarFinca(@Valid @RequestBody ActualizarFinca dto) {
+    public ResponseEntity<?> actualizarFinca(@Valid @ModelAttribute ActualizarFinca dto) {
         try {
-            fincaService.actualizarFinca(dto);
-            return ResponseEntity.status(HttpStatus.OK).body("Finca actualizada correctamente");
+            InfoFinca respuesta = fincaService.actualizarFinca(dto);
+            return ResponseEntity.status(HttpStatus.OK).body(respuesta);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al actualizar la finca. " + e.getMessage());
         }
     }
 
+    /*
     @PutMapping("/cambiar-foto")
     public ResponseEntity<?> cambiarFotoFinca(@ModelAttribute ActualizarFinca dto) {
         try {
@@ -65,17 +66,25 @@ public class FincaController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-    }
+    }*/
 
     @DeleteMapping("/eliminar-foto/{idFinca}")
-    public ResponseEntity<?> eliminarFotoFinca(@RequestParam Long idFinca) {
+    public ResponseEntity<?> eliminarFotoFinca(@PathVariable Long idFinca) {
         try {
             String response = fincaService.eliminarFotoFinca(idFinca);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(new FotoEliminada(response));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
     // NO OLVIDAR EXPONER ENDPOINT CON EL ENUM TIPODECULTIVO
+    @GetMapping("/cultivos")
+    public ResponseEntity<?> obtenerCultivos() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(TipoDeCultivo.values());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
     // En cada endpoint donde se necesite idUser se extrae del token JWT
 }

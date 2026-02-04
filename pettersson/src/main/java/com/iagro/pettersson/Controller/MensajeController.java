@@ -59,7 +59,7 @@ public class MensajeController {
 
 
     @GetMapping("/mensajes-chat/{idChat}/{page}")
-    public ResponseEntity<?> obtenerMensajesPorChat(@RequestParam Long idChat, int page) {
+    public ResponseEntity<?> obtenerMensajesPorChat(@PathVariable Long idChat, @PathVariable int page) {
         try {
             List<Mensaje> listaMensajes = mensajeService.listarUltimosMensajes(idChat, page);
             return ResponseEntity.status(HttpStatus.OK).body(listaMensajes);

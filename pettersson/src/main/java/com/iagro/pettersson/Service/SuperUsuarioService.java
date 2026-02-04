@@ -105,6 +105,7 @@ public class SuperUsuarioService {
             Plan plan = buscarPlanPorId(planId);
             usuario.setPlan(plan);
         });
+        // Reparar bug no se está actualizando la fecha
         dto.fechaInicioPlan().ifPresent(fechaInicio -> {
             usuario.setFechaInicioPlan(fechaInicio);
             usuario.setFechaFinPlan(fechaInicio.plusMonths(1));

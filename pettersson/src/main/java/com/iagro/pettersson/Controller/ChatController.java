@@ -1,8 +1,6 @@
 package com.iagro.pettersson.Controller;
 
-import com.iagro.pettersson.DTO.Chat.ActualizarNombreChat;
-import com.iagro.pettersson.DTO.Chat.ChatCreado;
-import com.iagro.pettersson.DTO.Chat.DatosUsuario;
+import com.iagro.pettersson.DTO.Chat.*;
 import com.iagro.pettersson.DTO.IAModel.ConsultaModelo;
 import com.iagro.pettersson.Enum.EmisorMensaje;
 import com.iagro.pettersson.Service.ChatService;
@@ -72,7 +70,7 @@ public class ChatController {
     @PutMapping("/cambiar-nombre-chat")
     public ResponseEntity<?> modificarNombreChat(@RequestBody ActualizarNombreChat dto) {
         try {
-            String nameChat = chatService.actualizarNombreChat(dto);
+            NuevoNombreDTO nameChat = chatService.actualizarNombreChat(dto);
             return ResponseEntity.status(HttpStatus.OK).body(nameChat);
         } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -83,7 +81,8 @@ public class ChatController {
     public ResponseEntity<?> eliminarChat(@RequestParam Long idChat) {
         try {
             chatService.eliminarChat(idChat);
-            return ResponseEntity.status(HttpStatus.OK).body("Chat eliminado correctamente");
+            ChatEliminadoDTO response = new ChatEliminadoDTO("Chat eliminado correctamente");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

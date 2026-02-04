@@ -1,5 +1,6 @@
 package com.iagro.pettersson.Service;
 
+import com.iagro.pettersson.DTO.Agrolink.InfoAgrolink;
 import com.iagro.pettersson.DTO.Agrolink.VincularAgrolink;
 import com.iagro.pettersson.Entity.Agrolink;
 import com.iagro.pettersson.Entity.Finca;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AgrolinkService {
@@ -61,14 +63,14 @@ public class AgrolinkService {
 
     // ---------------- Métodos de escritura ----------------
     @Transactional
-    public void vincularAgrolink(VincularAgrolink dto, Long idUser) {
+    public InfoAgrolink vincularAgrolink(VincularAgrolink dto, Long idUser) {
         Usuario usuario = buscarUsuario(idUser);
         Finca finca = buscarFincaPorId(dto.idFinca());
         String plan = String.valueOf(usuario.getPlan().getTipoPlan());
         int maxAgrolinks = usuario.getPlan().getMaxAgrolinksPorFinca();
         int agrolinksFinca = finca.getAgrolinks().size();
 
-        if (agrolinksFinca < maxAgrolinks) {
+        if (agrolinksFinca < maxAgrolinks || maxAgrolinks == -1) {
             Agrolink agrolink = buscarAgrolinkPorCodigo(dto.codigoAgrolink());
             if (agrolinkEsRegistrado(agrolink)) {
                 throw new RuntimeException("El agrolink " + agrolink.getNombreAgrolink() + " ya está vinculado a otro usuario");
@@ -80,11 +82,31 @@ public class AgrolinkService {
                 agrolink.setFechaVinculacion(fechaVinculacion);
 
                 agrolinkRepository.save(agrolink);
+                return new InfoAgrolink(agrolink.getCodigo(), agrolink.getNombreAgrolink());
             } catch (Exception e) {
                 throw new RuntimeException("Error al vincular Agrolink, " + e.getMessage());
             }
         } else {
             throw new RuntimeException("Ha alcanzado el máximo de agrolinks por finca para su plan. Su plan es: " + plan);
         }
+    }
+
+    public List<InfoAgrolink> obtenerAgrolinksPorFinca(Long idFinca) {
+        Finca finca = buscarFincaPorId(idFinca);
+        List<Agrolink> agrolinks = agrolinkRepository.findByFinca(finca).orElseThrow(() -> new RuntimeException("No hay Agrolinks registrados en esta finca"));
+
+        return agrolinks.stream()
+                .map(a -> new InfoAgrolink(
+                        a.getCodigo(),
+                        a.getNombreAgrolink()
+                ))
+                .toList();
+    }
+
+    public InfoAgrolink actualizarNombreAgrolink(InfoAgrolink dto) {
+        Agrolink agrolink = buscarAgrolinkPorCodigo(dto.codigoAgrolink());
+        agrolink.setNombreAgrolink(dto.nombre());
+        agrolinkRepository.save(agrolink);
+        return new InfoAgrolink(agrolink.getCodigo(), agrolink.getNombreAgrolink());
     }
 }

@@ -10,6 +10,6 @@ public record ActualizarFinca(
         Long id,
         Optional<String> nombre,
         Optional<Set<TipoDeCultivo>> tipoDeCultivo,
-        MultipartFile fotoFinca
+        Optional<MultipartFile> fotoFinca
 ) {
 }

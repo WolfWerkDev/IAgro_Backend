@@ -3,6 +3,7 @@ package com.iagro.pettersson.Service;
 import com.iagro.pettersson.DTO.Chat.ActualizarNombreChat;
 import com.iagro.pettersson.DTO.Chat.ChatCreado;
 import com.iagro.pettersson.DTO.Chat.DatosUsuario;
+import com.iagro.pettersson.DTO.Chat.NuevoNombreDTO;
 import com.iagro.pettersson.Entity.Chat;
 import com.iagro.pettersson.Entity.Mensaje;
 import com.iagro.pettersson.Entity.Usuario;
@@ -70,10 +71,10 @@ public class ChatService {
     }
 
     @Transactional
-    public String actualizarNombreChat(ActualizarNombreChat dto) {
+    public NuevoNombreDTO actualizarNombreChat(ActualizarNombreChat dto) {
         Chat chat = getChatReference(dto.idChat());
         chat.setNombreChat(dto.nuevoNombre());
-        return chat.getNombreChat();
+        return new NuevoNombreDTO(chat.getNombreChat());
     }
 
     @Transactional
