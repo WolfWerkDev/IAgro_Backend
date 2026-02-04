@@ -1,8 +1,6 @@
 package com.iagro.pettersson.Controller;
 
-import com.iagro.pettersson.DTO.Usuario.ActualizarUsuario;
-import com.iagro.pettersson.DTO.Usuario.InformacionUsuario;
-import com.iagro.pettersson.DTO.Usuario.RegistroUsuario;
+import com.iagro.pettersson.DTO.Usuario.*;
 import com.iagro.pettersson.Entity.Usuario;
 import com.iagro.pettersson.Service.UsuarioService;
 import jakarta.validation.Valid;
@@ -48,7 +46,8 @@ public class UsuarioController {
         Long idUser = usuarioService.obtenerIdUsuario();
         try {
             Usuario usuario = usuarioService.actualizarInfoUsuario(dto, idUser);
-            return ResponseEntity.status(HttpStatus.OK).body(usuario);
+            InformacionUsuario user = usuarioService.obtenerInfoDeUsuario(idUser);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -58,7 +57,7 @@ public class UsuarioController {
     public ResponseEntity<?> cambiarPassword(@RequestBody ActualizarUsuario dto) {
         Long idUser = usuarioService.obtenerIdUsuario();
         try {
-            String response = usuarioService.cambiarPassword(dto, idUser);
+            NewPasswordUpdatedDTO response = usuarioService.cambiarPassword(dto, idUser);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -71,7 +70,7 @@ public class UsuarioController {
     public ResponseEntity<?> cambiarFotoPerfil(@ModelAttribute ActualizarUsuario dto) {
         Long idUser = usuarioService.obtenerIdUsuario();
         try {
-            String response = usuarioService.actualizarFotoPerfil(dto, idUser);
+            FotoActualizadaDTO response = usuarioService.actualizarFotoPerfil(dto, idUser);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -82,7 +81,7 @@ public class UsuarioController {
     public ResponseEntity<?> eliminarFotoPerfil() {
         Long idUser = usuarioService.obtenerIdUsuario();
         try {
-            String response = usuarioService.eliminarFotoPerfil(idUser);
+            FotoActualizadaDTO response = usuarioService.eliminarFotoPerfil(idUser);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

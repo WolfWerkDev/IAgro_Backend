@@ -1,11 +1,7 @@
 package com.iagro.pettersson.Service;
 
-import com.iagro.pettersson.DTO.Finca.InfoFinca;
 import com.iagro.pettersson.DTO.Plan.InfoPlan;
-import com.iagro.pettersson.DTO.Usuario.ActualizarUsuario;
-import com.iagro.pettersson.DTO.Usuario.InformacionUsuario;
-import com.iagro.pettersson.DTO.Usuario.RegistroUsuario;
-import com.iagro.pettersson.Entity.Finca;
+import com.iagro.pettersson.DTO.Usuario.*;
 import com.iagro.pettersson.Entity.Plan;
 import com.iagro.pettersson.Entity.Usuario;
 import com.iagro.pettersson.Repository.UsuarioRepository;
@@ -17,9 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -118,7 +111,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public String cambiarPassword(ActualizarUsuario dto, Long iduser) {
+    public NewPasswordUpdatedDTO cambiarPassword(ActualizarUsuario dto, Long iduser) {
         Usuario usuario = buscarUsuarioPorId(iduser);
         dto.contraseñaAnterior().ifPresent(oldPass -> {
             if (!passwordEncoder.matches(oldPass, usuario.getContraseña())) {
@@ -128,25 +121,25 @@ public class UsuarioService {
             }
         });
         usuarioRepository.save(usuario);
-        return "Contraseña actualizada correctamente";
+        return new NewPasswordUpdatedDTO("Contraseña actualizada correctamente");
     }
 
     @Transactional
-    public String actualizarFotoPerfil(ActualizarUsuario dto, Long idUser) throws IOException {
+    public FotoActualizadaDTO actualizarFotoPerfil(ActualizarUsuario dto, Long idUser) throws IOException {
         Usuario usuario = buscarUsuarioPorId(idUser);
         String fotoUrl = fileStorageService.storeProfileImage(dto.fotoPerfil(), idUser);
         usuario.setFotoPerfil(fotoUrl);
         usuarioRepository.save(usuario);
-        return fotoUrl;
+        return new FotoActualizadaDTO(fotoUrl);
     }
 
     @Transactional
-    public String eliminarFotoPerfil(Long idUser) {
+    public FotoActualizadaDTO eliminarFotoPerfil(Long idUser) {
         Usuario usuario = buscarUsuarioPorId(idUser);
         fileStorageService.eliminarFotoPerfil(idUser);
         usuario.setFotoPerfil("images/fotoPerfilDefault.png");
         usuarioRepository.save(usuario);
-        return usuario.getFotoPerfil();
+        return new FotoActualizadaDTO(usuario.getFotoPerfil());
     }
 
 }
