@@ -9,7 +9,7 @@ public class WebClientConfig {
 
     // Se hardcodea en dev, se deben usar variables de entorno
     private final String BASEURL = "https://generativelanguage.googleapis.com";
-    private final String APIKEY = "AIzaSyClB3dQx1gpiP5DhtnJhik3qjJ9_VLUM3s";
+    private final String APIKEY = "";
 
     @Bean
     public WebClient webClient() {
