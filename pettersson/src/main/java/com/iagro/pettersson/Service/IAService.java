@@ -107,47 +107,58 @@ public class IAService {
         }
     }
 
-    // Método para consultar modelo
     @Async("iaExecutor")
     public CompletableFuture<String> consultarModeloIA(ConsultaModelo consulta) {
         try {
-            List<Map<String, Object>> contents = new ArrayList<>();
+            List<Map<String, Object>> parts = new ArrayList<>();
 
-            // Serializar dinámicamente solo campos no nulos
             if (consulta.programmingPrompt() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", consulta.programmingPrompt()))));
+                parts.add(Map.of("text", consulta.programmingPrompt()));
             }
+
             if (consulta.mensajeUsuario() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Usuario: " + consulta.mensajeUsuario()))));
+                parts.add(Map.of("text", "Usuario: " + consulta.mensajeUsuario()));
             }
+
             if (consulta.nombreChat() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Nombre del chat: " + consulta.nombreChat()))));
+                parts.add(Map.of("text", "Nombre del chat: " + consulta.nombreChat()));
             }
+
             if (consulta.ubicacionFinca() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Ubicación de la finca: " + consulta.ubicacionFinca()))));
+                parts.add(Map.of("text", "Ubicación de la finca: " + consulta.ubicacionFinca()));
             }
+
             if (consulta.tipoDeCultivos() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Tipos de cultivo: " + consulta.tipoDeCultivos()))));
+                parts.add(Map.of("text", "Tipos de cultivo: " + consulta.tipoDeCultivos()));
             }
+
             if (consulta.reportes() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Reportes: " + consulta.reportes()))));
+                parts.add(Map.of("text", "Reportes: " + consulta.reportes()));
             }
+
             if (consulta.historialMensajes() != null) {
-                contents.add(Map.of("parts", List.of(Map.of("text", "Historial de mensajes: " + consulta.historialMensajes()))));
+                parts.add(Map.of("text", "Historial de mensajes: " + consulta.historialMensajes()));
             }
 
-            Map<String, Object> requestBody = Map.of("contents", contents);
+            // 🔑 Un solo content
+            Map<String, Object> requestBody = Map.of(
+                    "contents", List.of(
+                            Map.of("parts", parts)
+                    )
+            );
 
-            String jsonToSend = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestBody);
+            String jsonToSend = objectMapper
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(requestBody);
+
             System.out.println("JSON enviado a Gemini:\n" + jsonToSend);
 
             String jsonString = webClient.post()
-                    .uri("/models/gemini-1.5-flash:generateContent")
+                    .uri("/models/gemini-2.5-flash-lite:generateContent")
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-
 
             JsonNode root = objectMapper.readTree(jsonString);
 
@@ -167,6 +178,7 @@ public class IAService {
             throw new RuntimeException("Error consultando o parseando respuesta de Gemini", e);
         }
     }
+
 
 
     // Método para extraer nombre de chat y devolver contenido limpio
