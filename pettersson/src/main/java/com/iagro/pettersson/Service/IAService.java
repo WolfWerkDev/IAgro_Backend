@@ -10,6 +10,7 @@ import com.iagro.pettersson.DTO.Reporte.ReporteIA;
 import com.iagro.pettersson.Entity.Mensaje;
 import com.iagro.pettersson.Entity.Reporte;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class IAService {
+
+    @Value("${gemini.api.key}")
+    private String apiKey;
 
     @Autowired
     private ReporteService reporteService;
@@ -154,7 +158,11 @@ public class IAService {
             System.out.println("JSON enviado a Gemini:\n" + jsonToSend);
 
             String jsonString = webClient.post()
-                    .uri("/models/gemini-1.5-flash:generateContent")
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/models/gemini-2.5-flash-lite:generateContent")
+                            .queryParam("key", apiKey)
+                            .build()
+                    )
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
