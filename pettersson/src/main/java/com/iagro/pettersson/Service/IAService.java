@@ -162,6 +162,7 @@ public class IAService {
             return CompletableFuture.completedFuture(respuesta);
 
         } catch (Exception e) {
+            System.err.println("Excepción capturada: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Error consultando o parseando respuesta de Gemini", e);
         }
