@@ -148,6 +148,7 @@ public class IAService {
                     .bodyToMono(String.class)
                     .block();
 
+            System.out.println("JsonString: " + jsonString);
             JsonNode root = objectMapper.readTree(jsonString);
 
             String respuesta = root.path("candidates")
