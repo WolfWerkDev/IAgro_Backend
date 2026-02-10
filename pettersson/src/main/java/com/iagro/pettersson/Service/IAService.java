@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -114,40 +115,55 @@ public class IAService {
     @Async("iaExecutor")
     public CompletableFuture<String> consultarModeloIA(ConsultaModelo consulta) {
         try {
-            List<Map<String, Object>> parts = new ArrayList<>();
-
-            if (consulta.programmingPrompt() != null) {
-                parts.add(Map.of("text", consulta.programmingPrompt()));
-            }
+            List<Map<String, Object>> userParts = new ArrayList<>();
 
             if (consulta.mensajeUsuario() != null) {
-                parts.add(Map.of("text", "Usuario: " + consulta.mensajeUsuario()));
+                userParts.add(Map.of("text", consulta.mensajeUsuario()));
             }
 
             if (consulta.nombreChat() != null) {
-                parts.add(Map.of("text", "Nombre del chat: " + consulta.nombreChat()));
+                userParts.add(Map.of("text", "Nombre del chat: " + consulta.nombreChat()));
             }
 
             if (consulta.ubicacionFinca() != null) {
-                parts.add(Map.of("text", "Ubicación de la finca: " + consulta.ubicacionFinca()));
+                userParts.add(Map.of("text", "Ubicación de la finca: " + consulta.ubicacionFinca()));
             }
 
-            if (consulta.tipoDeCultivos() != null) {
-                parts.add(Map.of("text", "Tipos de cultivo: " + consulta.tipoDeCultivos()));
+            if (consulta.tipoDeCultivos() != null && !consulta.tipoDeCultivos().isEmpty()) {
+                userParts.add(Map.of("text", "Tipos de cultivo: " + consulta.tipoDeCultivos()));
             }
 
-            if (consulta.reportes() != null) {
-                parts.add(Map.of("text", "Reportes: " + consulta.reportes()));
+            if (consulta.reportes() != null && !consulta.reportes().isEmpty()) {
+                userParts.add(Map.of("text", "Reportes: " + consulta.reportes()));
             }
 
             if (consulta.historialMensajes() != null) {
-                parts.add(Map.of("text", "Historial de mensajes: " + consulta.historialMensajes()));
+                userParts.add(Map.of("text", "Historial de mensajes: " + consulta.historialMensajes()));
             }
 
-            // 🔑 Un solo content
-            Map<String, Object> requestBody = Map.of(
-                    "contents", List.of(
-                            Map.of("parts", parts)
+            // Request body
+            Map<String, Object> requestBody = new HashMap<>();
+
+            // System instruction (prompt base)
+            if (consulta.programmingPrompt() != null) {
+                requestBody.put(
+                        "systemInstruction",
+                        Map.of(
+                                "parts", List.of(
+                                        Map.of("text", consulta.programmingPrompt())
+                                )
+                        )
+                );
+            }
+
+            // User content (OBLIGATORIO role)
+            requestBody.put(
+                    "contents",
+                    List.of(
+                            Map.of(
+                                    "role", "user",
+                                    "parts", userParts
+                            )
                     )
             );
 
@@ -157,7 +173,7 @@ public class IAService {
 
             System.out.println("JSON enviado a Gemini:\n" + jsonToSend);
 
-            String jsonString = webClient.post()
+            String jsonResponse = webClient.post()
                     .uri(uriBuilder -> uriBuilder
                             .path("/models/gemini-2.5-flash-lite:generateContent")
                             .queryParam("key", apiKey)
@@ -168,9 +184,10 @@ public class IAService {
                     .bodyToMono(String.class)
                     .block();
 
-            JsonNode root = objectMapper.readTree(jsonString);
+            JsonNode root = objectMapper.readTree(jsonResponse);
 
-            String respuesta = root.path("candidates")
+            String respuesta = root
+                    .path("candidates")
                     .get(0)
                     .path("content")
                     .path("parts")
@@ -186,6 +203,7 @@ public class IAService {
             throw new RuntimeException("Error consultando o parseando respuesta de Gemini", e);
         }
     }
+
 
 
 
