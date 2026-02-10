@@ -175,7 +175,7 @@ public class IAService {
 
             String jsonResponse = webClient.post()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/models/gemini-2.5-flash-lite:generateContent")
+                            .path("/models/gemini-2.5-flash:generateContent")
                             .queryParam("key", apiKey)
                             .build()
                     )
