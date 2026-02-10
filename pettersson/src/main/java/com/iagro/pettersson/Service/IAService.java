@@ -148,7 +148,7 @@ public class IAService {
                     .bodyToMono(String.class)
                     .block();
 
-            System.out.println("JsonString: " + jsonString);
+
             JsonNode root = objectMapper.readTree(jsonString);
 
             String respuesta = root.path("candidates")
@@ -162,6 +162,7 @@ public class IAService {
             return CompletableFuture.completedFuture(respuesta);
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Error consultando o parseando respuesta de Gemini", e);
         }
     }
