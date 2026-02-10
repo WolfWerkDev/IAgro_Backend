@@ -154,7 +154,7 @@ public class IAService {
             System.out.println("JSON enviado a Gemini:\n" + jsonToSend);
 
             String jsonString = webClient.post()
-                    .uri("/models/gemini-2.5-flash-lite:generateContent")
+                    .uri("/models/gemini-1.5-flash:generateContent")
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
