@@ -2,6 +2,7 @@ package com.iagro.pettersson.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iagro.pettersson.DTO.Reporte.ReporteIn;
+import com.iagro.pettersson.Entity.Agrolink;
 import com.iagro.pettersson.Entity.Reporte;
 import com.iagro.pettersson.Repository.ReporteRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,9 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ReporteService {
@@ -38,14 +40,21 @@ public class ReporteService {
 
 
     public List<Reporte> prepararReportes() {
+
+        Set<String> codigos = new HashSet<>(reportes.keySet());
+        List<Agrolink> agrolinks = reporteRepository.findByCodigoIn(codigos);
+        Map<String, Agrolink> agrolinkMap = agrolinks.stream()
+                .collect(Collectors.toMap(Agrolink::getCodigo, Function.identity()));
         List<Reporte> lista = new ArrayList<>();
 
         reportes.forEach((codigo, data) -> {
             try {
+                Agrolink agrolink = agrolinkMap.get(codigo);
+                if (agrolink == null) return;
                 ReporteIn reporteIn = objectMapper.convertValue(data, ReporteIn.class);
 
                 Reporte reporte = Reporte.builder()
-                        .codigoAgrolink(agrolinkService.buscarAgrolinkPorCodigo(codigo))
+                        .codigoAgrolink(agrolink)
                         .temperaturaSuelo(reporteIn.temperaturaSuelo())
                         .humedadSuelo(reporteIn.humedadSuelo())
                         .temperaturaAmbiente(reporteIn.temperaturaAmbiente())

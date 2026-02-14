@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
     @Query("SELECT r FROM Reporte r " +
@@ -16,5 +17,7 @@ public interface ReporteRepository extends JpaRepository<Reporte, Long> {
             "   SELECT MAX(r2.fechaReporte) FROM Reporte r2 WHERE r2.codigoAgrolink = r.codigoAgrolink" +
             ")")
     List<Reporte> findUltimosReportesPorAgrolinks(@Param("codigos") List<String> codigos);
+
+    List<Agrolink> findByCodigoIn(Set<String> codigos);
 
 }
