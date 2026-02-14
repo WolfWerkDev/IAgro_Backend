@@ -17,6 +17,4 @@ public interface ReporteRepository extends JpaRepository<Reporte, Long> {
             ")")
     List<Reporte> findUltimosReportesPorAgrolinks(@Param("codigos") List<String> codigos);
 
-    List<Agrolink> findByCodigoAgrolink(Set<String> codigos);
-
 }

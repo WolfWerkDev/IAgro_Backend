@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iagro.pettersson.DTO.Reporte.ReporteIn;
 import com.iagro.pettersson.Entity.Agrolink;
 import com.iagro.pettersson.Entity.Reporte;
+import com.iagro.pettersson.Repository.AgrolinkRepository;
 import com.iagro.pettersson.Repository.ReporteRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class ReporteService {
     @Autowired
     private AgrolinkService agrolinkService;
 
+    @Autowired
+    private AgrolinkRepository agrolinkRepository;
+
     private final ConcurrentHashMap<String, Object> reportes = new ConcurrentHashMap<>();
 
     @Async("rtExecutor")
@@ -42,7 +46,7 @@ public class ReporteService {
     public List<Reporte> prepararReportes() {
 
         Set<String> codigos = new HashSet<>(reportes.keySet());
-        List<Agrolink> agrolinks = reporteRepository.findByCodigoAgrolink(codigos);
+        List<Agrolink> agrolinks = agrolinkRepository.findByCodigoIn(codigos);
         Map<String, Agrolink> agrolinkMap = agrolinks.stream()
                 .collect(Collectors.toMap(Agrolink::getCodigo, Function.identity()));
         List<Reporte> lista = new ArrayList<>();
