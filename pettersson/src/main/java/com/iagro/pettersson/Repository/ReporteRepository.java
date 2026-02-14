@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
@@ -18,6 +17,6 @@ public interface ReporteRepository extends JpaRepository<Reporte, Long> {
             ")")
     List<Reporte> findUltimosReportesPorAgrolinks(@Param("codigos") List<String> codigos);
 
-    List<Agrolink> findByCodigoIn(Set<String> codigos);
+    List<Agrolink> findByCodigoAgrolink(Set<String> codigos);
 
 }

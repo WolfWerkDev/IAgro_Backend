@@ -42,7 +42,7 @@ public class ReporteService {
     public List<Reporte> prepararReportes() {
 
         Set<String> codigos = new HashSet<>(reportes.keySet());
-        List<Agrolink> agrolinks = reporteRepository.findByCodigoIn(codigos);
+        List<Agrolink> agrolinks = reporteRepository.findByCodigoAgrolink(codigos);
         Map<String, Agrolink> agrolinkMap = agrolinks.stream()
                 .collect(Collectors.toMap(Agrolink::getCodigo, Function.identity()));
         List<Reporte> lista = new ArrayList<>();
